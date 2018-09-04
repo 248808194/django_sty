@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="/home" method="post">
+<input name="username" type="text" placeholder="username">
+<input name="password" type="text" placeholder="password">
+<input name="email" type="text" placeholder="email">
+<input name="gender" type="text" placeholder="gender">
+<input type="submit" value="添加">
+
+    </form>
+
+<table border="1px">
+    <thead>
+    <tr>
+        <td>用户名</td>
+        <td>密码</td>
+        <td>邮箱</td>
+        <td>性别</td>
+    </tr>
+    </thead>
+
+    <tbody>
+    {%  for row in user_list %}
+        <tr>
+            <td>{{ row.username }}</td>
+            <td>{{ row.password }}</td>
+            <td>{{ row.email }}</td>
+            <td>{{ row.gender }}</td>
+        </tr>
+
+    {% endfor %}
+    </tbody>
+
+</table>
+
+</body>
+</html>

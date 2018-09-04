@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .hide {
+        display: none;
+    }
+
+    .c1 {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: black;
+        opacity: 0.6;
+        z-index: 9;
+    }
+
+    .c2 {
+        position: fixed;
+        top: 150px;
+        bottom: 50%;
+        left: 50%;
+        right: 50%;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border: 1px solid rebeccapurple;
+        z-index: 10;
+        margin-left: -150px;
+    }
+</style>
+<body style="font-size:35px">
+
+<div>
+    <input id="add" type="button" value="添加">
+</div>
+
+<table border="1px">
+    <thead>
+    <tr>
+        <th>业务线</th>
+        <th>主机列表</th>
+    </tr>
+    </thead>
+
+
+    <tbody>
+
+    {% for row in all_list %}
+        <tr>
+            <td> {{ row.name }}</td>
+            <td>
+                {% for row in row.r.all %}
+                    <span style="display: inline-block;background-color: black;color: white">{{ row.hostname }}</span>
+                {% endfor %}
+            </td>
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+<div class="c1 hide"></div>
+
+<div class="c2 hide ">
+    <form id="ajaxform" action="/ormm/app" method="post">
+        <div style="margin-top: 10px;text-align: center">
+            <input id="appname" type="text" name="appname" placeholder="业务线">
+            <div>
+                <select id="sel" name="hostlist" multiple data-am-selected>
+                    {% for row in host_list %}
+                        <option value="{{ row.nid }}">{{ row.hostname }}</option>
+                    {% endfor %}
+
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px;text-align: center">
+            <input type="button" id="ajaxsubmit" value="确定">
+            <input id="cacel" type="button" value="取消">
+        </div>
+    </form>
+</div>
+
+
+<script src="/static/jquery-1.12.4.js"></script>
+
+<script>
+    $('#cacel').click(function () {
+
+        $('.c1,.c2').addClass('hide')
+
+    });
+    $('#cacel1').click(function () {
+
+        $('.c1,.c22').addClass('hide')
+
+    });
+
+    $('#add').click(function () {
+
+        $('.c1,.c2').removeClass('hide')
+
+    });
+
+    $('#ajaxsubmit').click(function () {
+        $.ajax({
+            url: '/ormm/app',
+            type: 'POST',
+            data: $('#ajaxform').serialize(), // 将id为ajaxform 的form表单下所有需要提交的内容拿到 赋值给data
+            dataType: JSON,
+            traditional: true, //如果是发送列表,设置为traditional true
+                success: function (data) {
+                console.log(data);
+                alert(data)
+            }
+        })
+
+    });
+</script>
+</body>
+</html>

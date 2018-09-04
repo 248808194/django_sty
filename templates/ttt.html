@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<style>
+
+    .hide {
+        display: none;
+    }
+
+    .c1 {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: black;
+        opacity: 0.6;
+        z-index: 9;
+    }
+
+    .c2 {
+        position: fixed;
+        top: 150px;
+        bottom: 50%;
+        left: 50%;
+        right: 50%;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border: 1px solid rebeccapurple;
+        z-index: 10;
+        margin-left: -150px;
+    }
+
+    .c22 {
+        position: fixed;
+        top: 150px;
+        bottom: 50%;
+        left: 50%;
+        right: 50%;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border: 1px solid rebeccapurple;
+        z-index: 10;
+        margin-left: -150px;
+    }
+</style>
+
+<body>
+
+
+<div>
+    <input id="add" type="button" value="添加">
+</div>
+
+<h1>v1 对象方式获取</h1>
+<table border="1px">
+
+    <thead>
+    <tr>
+        <th>用户名</th>
+        <th>密码</th>
+        <th>用户组</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for row in v1 %}
+        <tr uid="{{ row.uid }}" groupid="{{ row.user_group_id }}">
+            <td>{{ row.username }}</td>
+            <td>{{ row.password }}</td>
+            <td>{{ row.user_group.groupname }}</td>
+            <td>
+                <span class="edit" style="cursor: pointer;color: rebeccapurple">编辑</span>
+                <span>|</span>
+                <span class="delete" style="cursor: pointer;color: rebeccapurple">删除</span>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+
+
+<div class="c1 hide"></div>
+
+<div class="c2 hide ">
+    <div style="margin-top: 10px;text-align: center">
+        <input id="username" type="text" name="username" placeholder="username">
+        <input id="password" type="text" name="password" placeholder="password">
+        <div>
+            <select id="sel" name="groupid">
+                {% for row in user_group %}
+                    <option value="{{ row.gid }}">{{ row.groupname }}</option>
+                {% endfor %}
+
+            </select>
+        </div>
+    </div>
+
+    <div style="margin-top: 10px;text-align: center">
+        <input type="button" id="ajaxsubmit" value="确定">
+        <input id="cacel" type="button" value="取消">
+    </div>
+</div>
+
+<div class="c22 hide ">
+    <form id="edit_form" action="/hmm/ttt" method="post">
+        <div style="margin-top: 10px;text-align: center">
+            <input class="hide" name="uid">
+            <input id="username1" type="text" name="username" placeholder="username">
+            <input id="password1" type="text" name="password" placeholder="password">
+            <div>
+                <select id="sel" name="groupid">
+                    {% for row in user_group %}
+                        <option value="{{ row.gid }}">{{ row.groupname }}</option>
+                    {% endfor %}
+
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px;text-align: center">
+            <input type="button" id="ajaxsubmit1" value="确定">
+            <input id="cacel1" type="button" value="取消">
+        </div>
+    </form>
+</div>
+
+<script src="/static/jquery-1.12.4.js"></script>
+
+<script>
+    $('#cacel').click(function () {
+
+        $('.c1,.c2').addClass('hide')
+
+    });
+    $('#cacel1').click(function () {
+
+        $('.c1,.c22').addClass('hide')
+
+    });
+    $('#add').click(function () {
+
+        $('.c1,.c2').removeClass('hide')
+
+    });
+
+    $('#ajaxsubmit').click(function () {
+        $.ajax({
+            url: '/hmm/ttt',
+            type: 'POST',
+            data: {'username': $('#username').val(), 'password': $('#password').val(), 'groupid': $('#sel').val()},
+            success: function (data) {
+                if (data == 'OK') {
+                    location.reload()
+                }
+                else {
+                    alert(data)
+                }
+            }
+        })
+
+    });
+
+    $('.edit').click(function () {
+        $('.c1,.c22').removeClass('hide');
+        var uid = $(this).parent().parent().attr('uid');
+        var username = $(this).parent().parent().children().eq(0).text();
+        var password = $(this).parent().parent().children().eq(1).text();
+        var groupid = $(this).parent().parent().attr('groupid');
+
+        $('#username1').val(username);
+        $('#password1').val(password);
+        $('.c22').find('select').val(groupid);
+
+        // 修改
+        $('#ajaxsubmit1').click(function () {
+            $.ajax({
+                url: '/hmm/ttt',
+                type: 'POST',
+                data: {
+                    'username': $('#username1').val(),
+                    'password': $('#password1').val(),
+                    'groupid': $('.c22').find('select').val(),
+                    'uid': uid,
+                    'method': 'edit'
+                },
+                success: function (data) {
+                    if (data == 'ok') {
+                        location.reload()
+                    }
+                    else {
+                        alert('FAILED')
+                    }
+                }
+            });
+        });
+
+    });
+
+        $('.delete').click(function () {
+        $(this).parent().parent().remove();
+            var uid = $(this).parent().parent().attr('uid');
+                        $.ajax({
+                url: '/hmm/ttt',
+                type: 'POST',
+                data: {
+                    'uid': uid,
+                    'method': 'delete'
+                },
+                success: function (data) {
+                    if (data !== 'ok') {
+                        alert('FAILED')
+                    }
+
+                }
+            });
+
+    })
+
+</script>
+</body>
+</html>

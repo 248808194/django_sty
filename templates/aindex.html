@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    span {
+        display: inline-block;
+        background-color: deeppink;
+        padding: 10px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .c1 {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: black;
+        opacity: 0.6;
+        z-index: 9;
+    }
+
+    .c2 {
+        position: fixed;
+        top: 150px;
+        bottom: 50%;
+        left: 50%;
+        right: 50%;
+        width: 400px;
+        height: 500px;
+        background: white;
+        border: 1px solid rebeccapurple;
+        z-index: 10;
+        margin-left: -200px;
+    }
+
+</style>
+<body style="font-size: 30px">
+<h3>主机表</h3>
+
+<input id="ADDHOST" type="button" value="添加主机">
+<table border="1px">
+    <thead>
+    <tr>
+        <th>主机名</th>
+        <th>IP</th>
+        <th>端口号</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in host_list %}
+        <tr id="{{ row.hid }}">
+            <td style="display: none" target="hid">{{ row.hid }}</td>
+            <td target="hostname">{{ row.hostname }}</td>
+            <td target="ipaddr">{{ row.ip }}</td>
+            <td target="port">{{ row.port }}</td>
+            <td>
+                <a class="hedit" style="cursor: pointer;color: rebeccapurple">编辑</a>
+                |
+                <a style="cursor: pointer;color: red;">删除</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+
+<h3>应用程序主机对应表</h3>
+<table border="1px">
+    <thead>
+    <tr>
+        <th>应用组</th>
+        <th>主机</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in all_app %}
+        <tr>
+            <td>{{ row.appname }}</td>
+            <td>
+                {% for roi in row.h_a.all %}
+                    <span>{{ roi.hostname }}</span>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+
+<h3>用户</h3>
+<table border="1px">
+    <thead>
+    <tr>
+        <th>用户名</th>
+        <th>密码</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in all_u %}
+
+        <tr>
+            <td>
+                <span>{{ row.username }} </span>
+            </td>
+            <td>
+                <span>{{ row.password }} </span>
+            </td>
+
+        </tr>
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+<h3>用户组</h3>
+<table border="1px">
+    <thead>
+    <tr>
+        <th>当前用户组</th>
+        <th>用户/密码</th>
+        <th>用户组下所有的机器</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in all_user %}
+        <tr>
+            <td>{{ row.groupname }}</td>
+            <td>
+                {% for row in row.ug_u.all %}
+                    <span>{{ row.username }} / {{ row.password }} ;</span>
+                {% endfor %}
+            </td>
+
+            <td>
+                {% for row in all_user %}
+                    <span> {{ row.ug_h.hostname }}</span>
+                {% endfor %}
+            </td>
+
+        </tr>
+
+    {% endfor %}
+    </tbody>
+
+</table>
+
+
+<div class="c1 hide"></div>
+
+<div class="c2 hide" style="text-align: center">
+    <form id="formaddhost" action="/a/addhost" method="post">
+            <div style="display: none">
+            <input type="text" name="hid">
+        </div>
+
+        <div>
+            <input type="text" name="hostname" placeholder="主机名">
+        </div>
+
+        <div>
+            <input type="text" name="ipaddr" placeholder="IP地址">
+        </div>
+
+        <div>
+            <input type="text" name="port" placeholder="端口号">
+        </div>
+
+        <div>
+            <select id="applist" name="applist" multiple data-am-selected>
+                {% for row in all_app %}
+                    <option aid="{{ row.aid }}" value="{{ row.aid }}">{{ row.appname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input id="A1" type="button" value="确定">
+        <input id="cel" type="button" value="取消">
+    </form>
+</div>
+
+<script src="/static/jquery-1.12.4.js"></script>
+<script>
+    $('#ADDHOST').click(function () {
+        $('.c1,.c2').removeClass('hide')
+    });
+
+    $('#A1').click(function () {
+        if ($(this).attr('update')) {
+                        $.ajax({
+                url: '/a/updatehost',
+                type: 'post',
+                data: $('#formaddhost').serialize(),
+                success: function (data) {
+                    $('.c1,.c2').addClass('hide');
+                    location.reload();
+                }
+            })
+        }
+        else {
+            $.ajax({
+                url: '/a/addhost',
+                type: 'post',
+                data: $('#formaddhost').serialize(),
+                success: function (data) {
+                    $('.c1,.c2').addClass('hide');
+                }
+            })
+        }
+
+    });
+
+    $('#cel').click(function () {
+        $('.c1,.c2').addClass('hide')
+    });
+    $('.hedit').click(function () {
+        var asdf = $(this).parent().parent().attr('id');
+        $.ajax({
+            url: '/a/edithost',
+            type: 'post',
+            data: {'hid': asdf},
+            traditional: true,
+            success: function (data) {
+                var obj = JSON.parse(data);
+                aid_array = obj.data;
+                $('select').val(aid_array);
+                $('#A1').attr('update', 'update')
+            }
+        });
+
+        $('.c1,.c2').removeClass('hide');
+        var tds = $(this).parent().siblings();
+        tds.each(function () {
+            var n = $(this).attr('target'); //td target值
+            var txt = $(this).text();      // td 文本内容
+            var temp = "form div input[name=" + n + "]";     //$('input[name=IP]').val(host);
+            console.log(temp);
+            $(temp).val(txt);
+        })
+
+
+    })
+
+</script>
+</body>
+</html>

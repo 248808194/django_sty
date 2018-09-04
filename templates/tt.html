@@ -1,0 +1,24 @@
+<style>
+
+    .page {
+        padding: 5px;
+        margin: 5px;
+        background-color: white;
+    }
+
+    .active {
+        background-color: deeppink;
+        font-size: large;
+    }
+
+</style>
+
+<ul>
+
+{% for item in li  %}
+    <li>{{ item }}</li>
+{% endfor %}
+
+</ul>
+
+{{ page_str }}

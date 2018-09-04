@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    span {
+        display: inline-block;
+        background-color: deeppink;
+        padding: 10px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .c1 {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: black;
+        opacity: 0.6;
+        z-index: 9;
+    }
+
+    .c2 {
+        position: fixed;
+        top: 150px;
+        bottom: 50%;
+        left: 50%;
+        right: 50%;
+        width: 400px;
+        height: 500px;
+        background: white;
+        border: 1px solid rebeccapurple;
+        z-index: 10;
+        margin-left: -200px;
+    }
+
+</style>
+<body style="font-size: 30px">
+
+
+<h3>用户组</h3>
+
+<input id="ADDHOST" type="button" value="添加">
+<table border="1px">
+
+    <thead>
+    <tr>
+        <th>当前用户组</th>
+        <th>用户</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for row in all_user %}
+        <tr>
+            <td class="groupname" target="groupname" >{{ row.groupname }}</td>
+            <td>
+                {% for row in row.ug_u.all %}
+                    <span>{{ row.username }}</span>
+                {% endfor %}
+            </td>
+
+            <td>
+                <a  class="EDIT" style="cursor: pointer;background-color: rebeccapurple">编辑</a>
+                <span>|</span>
+                <a class="DEL" style="cursor: pointer;background-color: rebeccapurple">删除</a>
+            </td>
+
+        </tr>
+
+    {% endfor %}
+    </tbody>
+
+</table>
+
+
+<div class="c1 hide"></div>
+
+<div class="c2 hide" style="text-align: center">
+    <form id="aadmin" action="/a/aadmin" method="post">
+
+        <div>
+            <input type="text" name="groupname" placeholder="用户组">
+        </div>
+
+        <div>
+            <select id="applist" name="applist" multiple data-am-selected>
+                {% for row in all_u %}
+                    <option aid="{{ row.uid }}" value="{{ row.uid }}">{{ row.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input id="A1" type="button" value="确定">
+        <input id="cel" type="button" value="取消">
+    </form>
+</div>
+
+<script src="/static/jquery-1.12.4.js"></script>
+<script>
+    $('#ADDHOST').click(function () {
+        $('.c1,.c2').removeClass('hide');
+    });
+    $('#A1').click(function () {
+        $.ajax({
+            url: '/a/aadmin',
+            type: 'post',
+            data: $('#aadmin').serialize(),
+            success: function (data) {
+                $('.c1,.c2').addClass('hide');
+                location.reload()
+            }
+        })
+    });
+
+
+    $('#cel').click(function () {
+        $('.c1,.c2').addClass('hide')
+    });
+
+    $('.DEL').click(function () {
+        var groupname = $(this).parent().siblings('.groupname').text(); //方法1
+        var groupname1 = $(this).parent().siblings('[target=groupname]').text(); // 方法2
+        console.log(groupname,groupname1);
+                $.ajax({
+            url: '/a/admindel',
+            type: 'post',
+            data: {'groupname':groupname},
+            success: function (data) {
+                location.reload()
+            }
+        })
+
+    })
+
+
+</script>
+</body>
+</html>

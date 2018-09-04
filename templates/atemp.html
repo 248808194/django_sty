@@ -1,0 +1,17 @@
+{% extends 'atempmaster.html' %}
+
+{% load zhoutao %}
+
+{% block userinfo %}
+        {% zztt 1 2 3 4 5 %}
+    {{ 13|zzz:12 }}
+
+    {% for i in all_host %}
+        <tr>
+            <td>{{ i.hostname|upper }}</td>
+            <td>{{ i.port }}</td>
+
+        </tr>
+    {% endfor %}
+
+{% endblock %}

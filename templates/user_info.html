@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body {
+        margin: 0 auto;
+    }
+    .c1 {
+        height: 48px;
+        background-color: antiquewhite;
+    }
+
+    .c2 {
+        position: absolute;
+        top: 48px;
+        left: 0;
+        bottom: 0;
+        width: 200px;
+        background: aquamarine;
+        text-align: center;
+    }
+        .c3 {
+        position: absolute;
+        top: 48px;
+        left: 210px;
+        bottom: 0;
+        width: 500px;
+            right: 0;
+            overflow: auto;
+    }
+    .menu {
+        display: block;
+        padding: 5px 15px ;
+    }
+
+    a {
+        padding: 0 15px;
+    }
+</style>
+
+<body>
+
+
+<div class="c1">后台</div>
+
+
+<div class="c2">
+    <a href="/hmm/user_info" class="menu">用户管理</a>
+    <a href="/hmm/user_group" class="menu">用户组管理</a>
+
+</div>
+<div class="c3">
+<div>
+    <form action="/hmm/user_info.html" method="post">
+        <input type="text" name="username"  placeholder="用户名">
+        <input type="text" name="password" placeholder="密码">
+        <select name="groupid">
+            {% for row in group %}
+                <option value="{{ row.gid }}">{{ row.groupname }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="确定">
+    </form>
+</div>
+
+    <table border="1px">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>用户名</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for row in user_info %}
+                <tr>
+                <td>{{ row.uid }}</td>
+                    <td></td>
+                <td><a href="/hmm/user_detail-{{ row.uid }}">{{ row.username }}</a>
+                <a href="/hmm/user_del-{{ row.uid}}">删除</a>
+                <a href="/hmm/user_edit-{{ row.uid}}">编辑</a>
+                </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+
+
+    </table>
+
+
+</div>
+
+</body>
+</html>

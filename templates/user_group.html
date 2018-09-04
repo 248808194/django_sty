@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body {
+        margin: 0 auto;
+    }
+    .c1 {
+        height: 48px;
+        background-color: antiquewhite;
+    }
+
+    .c2 {
+        position: absolute;
+        top: 48px;
+        left: 0;
+        bottom: 0;
+        width: 200px;
+        background: aquamarine;
+        text-align: center;
+    }
+        .c3 {
+        position: absolute;
+        top: 48px;
+        left: 210px;
+        bottom: 0;
+        width: 500px;
+            right: 0;
+            overflow: auto;
+    }
+    .menu {
+        display: block;
+        padding: 5px 15px ;
+    }
+</style>
+
+<body>
+
+
+<div class="c1">后台</div>
+
+
+<div class="c2">
+    <a href="/hmm/user_info" class="menu">用户管理</a>
+    <a href="/hmm/user_group" class="menu">用户组管理</a>
+
+</div>
+<div class="c3">
+<form action="/hmm/user_group.html" method="post">
+    <input name="groupname" type="text" placeholder="组名">
+    <input type="submit" value="添加">
+</form>
+
+<table border="1px">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>组名</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <ul>
+        {% for row in user_group %}
+            <tr>
+            <td>{{ row.gid }}</td>
+            <td>{{ row.groupname }}<span style="padding: 0 15px ">|</span><a href="/hmm/group_del-{{ row.gid }}">DEL</a></td>
+
+</tr>
+        {% endfor %}
+    </ul>
+    </tbody>
+</table>
+
+</div>
+
+</body>
+</html>
